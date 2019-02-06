@@ -1,0 +1,3 @@
+library(pamr)
+
+data(khan)
