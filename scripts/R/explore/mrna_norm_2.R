@@ -1,14 +1,14 @@
 setwd("C:/Users/wbowers/Documents/tcga_replication/data")
 
-exp.data <- read.csv("TCGA_SARC_mrna_data_Amatch.csv", row.names = 1, stringsAsFactors = FALSE)
+exp.data <- read.csv("TCGA_SARC_data_raw.csv", row.names = 1, stringsAsFactors = FALSE)
 # exp.data <- exp.data[1:1000,]
 
 # Filter out all genes with < 90% nonzero expression
 ind.90filt <- c()
 for (i in 1:nrow(exp.data)){
- if ((sum(exp.data[i,] == 0, na.rm = TRUE)/ncol(exp.data))>=0.1){
-   ind.90filt <- c(ind.90filt, i)
- } 
+  if ((sum(exp.data[i,] == 0, na.rm = TRUE)/ncol(exp.data))>=0.1){
+    ind.90filt <- c(ind.90filt, i)
+  } 
 }
 
 exp.data.90filt <- exp.data[-ind.90filt,]
@@ -33,7 +33,7 @@ exp.data.c2 <- as.data.frame(t(apply(exp.data.c1,1,function(x){
   x-median(x)
 })))
 
-# write.csv(exp.data.c2, "TCGA_SARC_mrna_data_lnorm_medc_nosdfilt_Amatch.csv")
+write.csv(exp.data.c2, "TCGA_SARC_mrna_data_lnorm_medc_nosdfilt.csv")
 
 # Check new distribution
 ggplot() +
@@ -49,4 +49,4 @@ for (i in 1:nrow(exp.data.c2)){
 
 exp.data.sdfilt <- exp.data.c2[-ind.std2filt,]
 
-# write.csv(exp.data.sdfilt, "TCGA_SARC_mrna_data_lnorm_medc_Amatch.csv")
+write.csv(exp.data.sdfilt, "TCGA_SARC_mrna_data_lnorm_medc.csv")

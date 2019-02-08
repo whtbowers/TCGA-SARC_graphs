@@ -39,7 +39,6 @@ os.inf <- data.frame(
   patient.barcode = clin.data$submitter_id,
   patient.vital_status = death.bin,
   CCT2 = exp.ord
-  
 )
 
 # Find cutoff point
@@ -50,7 +49,6 @@ os.cct2.cut <- surv_cutpoint(
   time = "times",
   event = "patient.vital_status",
   variables = "CCT2"
-  
 )
 
 summary(os.cct2.cut)
