@@ -51,9 +51,9 @@ fit1 <- survfit(surv_object ~ rx, data = ovarian)
 ggsurvplot(fit1, data = ovarian, pval = TRUE)
 summary(fit1)
 
-# Stratify bytumor regression
-fit2 <- survfit(surv_object ~ resid.ds, data = ovarian)
+# Stratify by tumor regression
 ggsurvplot(fit2, data = ovarian, pval = TRUE)
+
 # Survival significant relative to tumor regression - may want follow-up study
 
 # Cox PH - Hazard ratios can utilise multitude of variables for more informant model

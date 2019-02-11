@@ -1,4 +1,5 @@
 setwd("C:/Users/wbowers/Documents/tcga_replication/data")
+set.seed(123.456)
 
 exp.data <- read.csv("TCGA_SARC_data_raw.csv", row.names = 1, stringsAsFactors = FALSE)
 # exp.data <- exp.data[1:1000,]
@@ -50,3 +51,4 @@ for (i in 1:nrow(exp.data.c2)){
 exp.data.sdfilt <- exp.data.c2[-ind.std2filt,]
 
 write.csv(exp.data.sdfilt, "TCGA_SARC_mrna_data_lnorm_medc.csv")
+write.table(exp.data.sdfilt, "TCGA_SARC_mrna_data_lnorm_medc.tsv", sep="\t")
