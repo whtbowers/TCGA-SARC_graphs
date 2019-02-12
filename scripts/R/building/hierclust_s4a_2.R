@@ -3,6 +3,21 @@ set.seed(123.456)
 
 library(tidyverse)
 
+# Clear out empty figure directories
+filescan <- function(dirpath = ".") {
+  for (item in list.dirs(dirpath, recursive = FALSE)){
+    if (length(list.files(item, recursive = TRUE)) == 0) {
+      unlink(item, recursive = TRUE)
+    } else {
+      for (lower_item in list.dirs(item, recursive = FALSE)){
+        if (length(list.files(lower_item, recursive = FALSE)) == 0){
+          unlink(paste(lower_item, sep = ""), recursive = TRUE)
+        }
+      }
+    }
+  }
+}
+filescan(dirpath = "../figs")
 # Create directory if doesn't exist
 date <- Sys.Date()
 

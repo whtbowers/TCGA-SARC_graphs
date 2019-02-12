@@ -13,8 +13,8 @@ if (!file.exists(paste("../figs/", date, sep = ''))){
 runpath <- paste("../figs/", date, "/", format(Sys.time(), "%H_%M_%S"), sep = "")
 dir.create(file.path(runpath))
 
-exp.data <- read.csv("TCGA_SARC_mrna_data_lnorm_medc_nosdfilt.csv", row.names = 1, stringsAsFactors = FALSE)
-exp.info <- read.csv("TCGA_SARC_mrna_info_2.csv", stringsAsFactors = FALSE)
+exp.data <- read.csv("TCGA_SARC_mrna_data.csv", row.names = 1, stringsAsFactors = FALSE)
+exp.info <- read.csv("TCGA_SARC_mrna_info.csv", stringsAsFactors = FALSE)
 clin.data <- read.csv("TCGA_SARC_clinical.csv", stringsAsFactors = FALSE)
 
 ## Check if number of patients with difficult diagnoses same as number of excluded patients ##
