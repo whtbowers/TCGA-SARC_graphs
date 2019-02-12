@@ -128,7 +128,7 @@ fit1 <- survfit(surv_object ~ med.cutoff, data = surv.inf)
 ggsurv <- ggsurvplot(fit1, 
            data = surv.inf, 
            pval = TRUE,
-           # risk.table = TRUE,
+           risk.table = TRUE,
            conf.int = TRUE
            ) 
 ggsurv$plot <- ggsurv$plot +

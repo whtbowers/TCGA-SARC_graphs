@@ -88,7 +88,7 @@ table(as.character(exp.info[4,]))
 clin.ids <- clin.data$submitter_id[which(clin.data$tissue_or_organ_of_origin == "Uterus, NOS")]
 
 # Change LMS to ULMS if uterine
-exp.info[match(clin.ids, as.vector(as.character(exp.info[1,])))] <- "ULMS"
+exp.info[4, match(clin.ids, as.vector(as.character(exp.info[1,])))] <- "ULMS"
 
 #Relabel other LMS as STLMS
 exp.info[4, exp.info[4,] == "LMS"] <- "STLMS"
@@ -101,5 +101,5 @@ ncol(exp.info)
 exp.data <- exp.data.sdfilt[,-which(exp.info[4,] == "other")]
 exp.info <- exp.info[,-which(exp.info[4,] == "other")]
 
-write.csv(exp.info, "TGCA_SARC_mrna_info")
-write.csv(exp.data, "TGCA_SARC_mrna_data")
+write.csv(exp.info, "TGCA_SARC_mrna_info.csv")
+write.csv(exp.data, "TGCA_SARC_mrna_data.csv")
