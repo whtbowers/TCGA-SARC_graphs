@@ -76,7 +76,7 @@ sidecols <- cbind(Cluster=col.clust, HistType = col.hist)
 # Table displaying colour of each phenotype
 coltab <- unique(data.frame(as.vector(as.character(exp.info[4,])), col.hist))
 
-png(paste(runpath, "/hmp3.png" ,sep="")) 
+png(paste(runpath, "/hmp.png" ,sep="")) 
 heatmap3(
   clust3$consensusMatrix,
   col = col.hmap,
@@ -90,3 +90,6 @@ text(x=c(0.18, 0.40, 0.65), y = c(0.85, 0.85, 0.85), labels = c("C1", "C2", "C3"
 
 dev.off()
 
+exp.info.withclust <- rbind(exp.info, clust3$consensusClass)
+
+write.csv(exp.info.withclust, "TGCA_SARC_mrna_info.csv")
