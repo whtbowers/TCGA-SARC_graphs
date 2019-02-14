@@ -36,8 +36,6 @@ exp.data.c2 <- as.data.frame(t(apply(exp.data.c1,1,function(x) {
   x-median(x)
 })))
 
-# write.csv(exp.data.c2, "TCGA_SARC_mrna_data_lnorm_medc_nosdfilt_aln.csv")
-
 # Check new distribution
 ggplot() +
   geom_histogram(aes(x=as.numeric(exp.data.c2[1,])))
@@ -65,7 +63,7 @@ for (i in 1:length(colnames(exp.info))){
 
 exp.info[1,] <- twelvid
 
-# info cleanup
+# Streamline histological information
 hist.abbrv <- as.character(as.vector(exp.info[2,]))
 
 hist.abbrv[hist.abbrv == "Malignant Peripheral Nerve Sheath Tumors (MPNST)"] <- "MPNST"
@@ -98,8 +96,13 @@ table(as.character(exp.info[4,]))
 ## Remove patients who have type 'other' ##
 ncol(exp.info)
 
-exp.data <- exp.data.sdfilt[,-which(exp.info[4,] == "other")]
+exp.data.nosdfilt <- exp.data.c2[,-which(exp.info[4,] == "other")]
+exp.data.sdfilt <- exp.data.sdfilt[,-which(exp.info[4,] == "other")]
+
+
 exp.info <- exp.info[,-which(exp.info[4,] == "other")]
+
+write.csv(exp.data.nosdfilt, "TCGA_SARC_mrna_data_nosdfilt.csv")
 
 write.csv(exp.info, "TGCA_SARC_mrna_info.csv")
 write.csv(exp.data, "TGCA_SARC_mrna_data.csv")

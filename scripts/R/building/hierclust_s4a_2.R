@@ -4,20 +4,18 @@ set.seed(123.456)
 library(tidyverse)
 
 # Clear out empty figure directories
-filescan <- function(dirpath = ".") {
-  for (item in list.dirs(dirpath, recursive = FALSE)){
-    if (length(list.files(item, recursive = TRUE)) == 0) {
-      unlink(item, recursive = TRUE)
-    } else {
-      for (lower_item in list.dirs(item, recursive = FALSE)){
-        if (length(list.files(lower_item, recursive = FALSE)) == 0){
-          unlink(paste(lower_item, sep = ""), recursive = TRUE)
-        }
+for (item in list.dirs("../figs", recursive = FALSE)){
+  if (length(list.files(item, recursive = TRUE)) == 0) {
+    unlink(item, recursive = TRUE)
+  } else {
+    for (lower_item in list.dirs(item, recursive = FALSE)){
+      if (length(list.files(lower_item, recursive = FALSE)) == 0){
+        unlink(paste(lower_item, sep = ""), recursive = TRUE)
       }
     }
   }
 }
-filescan(dirpath = "../figs")
+
 # Create directory if doesn't exist
 date <- Sys.Date()
 
@@ -83,8 +81,7 @@ heatmap3(
   ColSideColors = sidecols,
   showColDendro = F,
   showRowDendro = F,
-  legendfun = function()showLegend(legend=as.vector(as.character(coltab[,1])),col=as.vector(as.character(coltab[,2])),cex=1.5),
-  main = "Patient clustering"
+  legendfun = function()showLegend(legend=as.vector(as.character(coltab[,1])),col=as.vector(as.character(coltab[,2])),cex=1.5)
 )
 text(x=c(0.18, 0.40, 0.65), y = c(0.85, 0.85, 0.85), labels = c("C1", "C2", "C3"))
 

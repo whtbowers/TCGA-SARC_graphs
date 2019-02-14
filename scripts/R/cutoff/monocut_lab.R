@@ -59,7 +59,7 @@ train.ind <- createDataPartition(
   as.vector(as.character(exp.info.ord[4,])),
   p = 0.7,
   list = FALSE
-  )
+)
 
 train.data <- exp.goi.ord[,train.ind]
 train.info <- exp.info.ord[,train.ind]
@@ -77,26 +77,72 @@ test.clin <- clin.data.ord[-train.ind,]
 
 # cutpoint percentiles
 
-quantiles <- quantile(train.data, seq(0.1, 1, by=0.1)) #Start w/perdecile, then increase to percentile
+sppoints <- quantile(train.data, seq(0.1, 0.9, by=0.1)) #Start w/perdecile, then increase to percentile
 
 # Binarise days to death for OS
 death.bin <- ifelse(train.clin$days_to_death == '--', 0, 1)
 
-# Separate expression values by median
-exp.medsplit <- ifelse(train.data >= median(as.vector(as.numeric(train.data))), 1, 2)
+# Collect chi squared values
 
-# Create df for easier graphing
-surv.inf <- data.frame(
-  os.times = as.numeric(train.clin$days_to_death),
-  pfs.times = as.vector((as.numeric(train.clin$days_to_death)) - as.vector(as.numeric(train.clin$days_to_last_follow_up))),
-  diag.cluster = as.vector(as.character(train.info[4,])),
-  sex = train.clin$gender,
-  race = train.clin$race,
-  patient.barcode = train.clin$submitter_id,
-  patient.vital_status = death.bin,
-  CCT2 = as.vector(as.numeric(train.data)),
-  med.cutoff = as.vector(as.numeric(exp.medsplit))
-)
+chisqs <- c()
+
+library(survival)
+library(survminer)
+
+for (point in sppoints) {
+  
+  #separate by quantile split values
+  
+  valsplit <- ifelse(train.data >= point, 1, 2)
+  
+  surv.inf <- data.frame(
+    os.times = as.numeric(train.clin$days_to_death),
+    pfs.times = as.vector((as.numeric(train.clin$days_to_death)) - as.vector(as.numeric(train.clin$days_to_last_follow_up))),
+    diag.cluster = as.vector(as.character(train.info[4,])),
+    sex = train.clin$gender,
+    race = train.clin$race,
+    patient.barcode = train.clin$submitter_id,
+    patient.vital_status = death.bin,
+    CCT2 = as.vector(as.numeric(train.data)),
+    cutoff = as.vector(as.numeric(valsplit))
+  )
+  
+  # Create survival based on chosen stat time and event
+  
+  surv_object <- Surv(time = surv.inf$os.times, event = surv.inf$patient.vital_status)
+  
+  # Fit survival curve (Stratify by chosen category)
+  
+  surv_fit <- survfit(surv_object ~ cutoff, data = surv.inf)
+  
+  # Log-rank to get chisq
+  
+  lrank <- survdiff(surv_object ~ cutoff, data = surv.inf )
+  chisqs <- c(chisqs, lrank$chisq)
+  
+  
+  
+}
+
+max.chisq <- max(abs((chisqs)))
+opt.split <- sppoints[which(chisqs == max.chisq)]
+
+
+# Separate expression values by median
+# exp.medsplit <- ifelse(train.data >= median(as.vector(as.numeric(train.data))), 1, 2)
+
+# # Create df for easier graphing
+# surv.inf <- data.frame(
+#   os.times = as.numeric(train.clin$days_to_death),
+#   pfs.times = as.vector((as.numeric(train.clin$days_to_death)) - as.vector(as.numeric(train.clin$days_to_last_follow_up))),
+#   diag.cluster = as.vector(as.character(train.info[4,])),
+#   sex = train.clin$gender,
+#   race = train.clin$race,
+#   patient.barcode = train.clin$submitter_id,
+#   patient.vital_status = death.bin,
+#   CCT2 = as.vector(as.numeric(train.data)),
+#   med.cutoff = as.vector(as.numeric(exp.medsplit))
+# )
 
 # Dispay all graphically
 
@@ -115,32 +161,33 @@ surv.inf <- data.frame(
 library(survival)
 library(survminer)
 
-# Create survival based on chosen stat time and event
-
-surv_object <- Surv(time = surv.inf$os.times, event = surv.inf$patient.vital_status)
-
-# Fit survival curve (Stratify by chosen category)
-
-fit1 <- survfit(surv_object ~ med.cutoff, data = surv.inf)
+# # Create survival based on chosen stat time and event
+# 
+# surv_object <- Surv(time = surv.inf$os.times, event = surv.inf$patient.vital_status)
+# 
+# # Fit survival curve (Stratify by chosen category)
+# 
+# fit1 <- survfit(surv_object ~ med.cutoff, data = surv.inf)
 
 # Plot curve visually
 
 ggsurv <- ggsurvplot(fit1,
-           data = surv.inf,
-           pval = TRUE,
-           #risk.table = TRUE,
-           conf.int = TRUE,
-           log.rank.weights = "survdiff"
-           )
+                     data = surv.inf,
+                     pval = TRUE,
+                     #risk.table = TRUE,
+                     conf.int = TRUE,
+                     #log.rank.weights = "survdiff",
+                     main = "text"
+)
 ggsurv$plot <- ggsurv$plot +
   ggplot2::annotate("text",
                     x = 1200, y = 0.9, # x/y coords of text
                     label = paste("Upper: ", sum(exp.medsplit == 1, na.rm = TRUE),
-                                  "\nLower:", sum(exp.medsplit == 2, na.rm = TRUE), sep = "")
-                    )
+                                  "\nLower: ", sum(exp.medsplit == 2, na.rm = TRUE), sep = "")
+  )
 
 print(ggsurv)
-
+dev.off()
 # Log-rank comparison of curves
 
 lrank <- survdiff(surv_object ~ med.cutoff, data = surv.inf )
